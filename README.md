@@ -14,7 +14,7 @@ sbt run
 
 # About the test
 
-This was implemented in around one hour.
+This was implemented in around an hour and a half.
 
 ## Base
 
@@ -29,15 +29,21 @@ backend microservices.
 
 I've used exclusively server-side validation as it's the most reliable, given time client side could be added so the user gets less jarring validation messages.
 
+There are no constraints on the mongo collection, and a person with identical details can apply multiple times. This could be easily remedied as further work.
+
 ## Front-end
 
 Given more time, i would have added a base template for views. I would also have considered not using flashing() to pass the user's firstname for the success screen
 in favour of a GET parameter (most reliable) or pulling the latest inserted record from the database (fine for this example, but a bad idea in general).
 
+Flashing also leads to some unsatisfactory error handling in applicationSuccess.scala.html
+
 ## Architecture
 
 For such a straightforward spec, I could legitimately be accused of overengineering this solution. I've tried to use repository, service and connector patterns to 
 demonstrate my knowledge. But if this spec was the entire scope of the project it's likely I would have done much more within the ApplicationController.
+
+I would not normally call repositories directly from a controller as I have here, i'd insert an interim service, in my experience that helps testability.
 
 ## Storage of UserData
 
@@ -64,6 +70,14 @@ Is parsed using play-json and case classes from the server-side. Again this coul
 ## Mongo
 
 I have used Reactive Mongo, a reactive, asynchronous and non-blocking Scala driver for MongoDB.
+
+## Testing
+
+Connectors are untested, they could be as a future enhancement with something like wiremock.
+
+Repositories and controllers are integration tested
+
+Other types of class are unit tested
 
 # Requirements
 

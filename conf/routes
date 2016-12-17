@@ -1,3 +1,4 @@
 
 GET      /                          controllers.ApplicationController.present
+GET      /success                   controllers.ApplicationController.success
 POST     /                          controllers.ApplicationController.applicationPost

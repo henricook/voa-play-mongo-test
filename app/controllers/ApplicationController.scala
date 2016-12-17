@@ -4,13 +4,15 @@ import javax.inject._
 
 import connectors.restcountries.Country
 import models.UserData
+import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.{ I18nSupport, MessagesApi }
 import play.api.mvc._
+import repositories.UserdataRepository
 import services.CountryService
 
-import scala.concurrent.{ Await, ExecutionContext }
+import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration._
 import language.postfixOps
 
@@ -18,11 +20,16 @@ import language.postfixOps
   * Application Controller: Presents the application form and processes a submitted application
   */
 @Singleton
-class ApplicationController @Inject()(val messagesApi: MessagesApi, countryService: CountryService)(implicit exec: ExecutionContext) extends Controller with I18nSupport {
+class ApplicationController @Inject()(val messagesApi: MessagesApi,
+                                      countryService: CountryService,
+                                      userDataRepository: UserdataRepository)(implicit exec: ExecutionContext) extends Controller with I18nSupport {
 
   // TODO: Await is normally a bad pattern, can this be done differently?
   val countryList: List[Country] = Await.result(countryService.getEuropeanCountries, 5 seconds)
 
+  /**
+    * The application form
+    */
   val form = Form(
     mapping(
       "name" -> nonEmptyText,
@@ -32,18 +39,37 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi, countryServi
     )(UserData.apply)(UserData.unapply)
   )
 
+  /**
+    * Present the main page
+    * @return
+    */
   def present = Action { Ok(views.html.application(form, countryList)) }
 
-  def success = Action { Ok(views.html.applicationSuccess()) }
+  /**
+    * Present a success message after application submission
+    * @return
+    */
+  def success = Action { implicit request =>
+    Ok(views.html.applicationSuccess())
+  }
 
-  def applicationPost = Action { implicit request =>
+  /**
+    * Handle application submission
+    * @return
+    */
+  def applicationPost = Action.async { implicit request =>
     form.bindFromRequest.fold(
       formWithErrors => {
-        BadRequest(views.html.application(formWithErrors, countryList))
+        Future.successful(BadRequest(views.html.application(formWithErrors, countryList)))
       },
-      contact => {
-        // val contactId = Contact.save(contact)
-        Redirect(routes.ApplicationController.present).flashing("success" -> "Application saved!")
+      application => {
+        userDataRepository.create(application).map { _ =>
+          Redirect(routes.ApplicationController.success).flashing("name" -> application.name)
+        }.recoverWith {
+          case ex: Throwable =>
+            Logger.error("Database error when trying to write application", ex)
+            Future.successful(Ok("There was a database error"))
+        }
       }
     )
   }
