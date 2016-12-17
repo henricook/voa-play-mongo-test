@@ -1,0 +1,26 @@
+@import connectors.restcountries.Country
+
+@(applicationForm: Form[UserData], countries: List[Country])(implicit messages: Messages)
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Some Useful Government Service</title>
+</head>
+<body>
+    <div id="content" style="width: 600px;">
+    <h1>Some Useful Government Service</h1>
+    @helper.form(action = routes.ApplicationController.applicationPost()) {
+            @helper.inputText(applicationForm("name"), '_label -> "Name", '_showConstraints -> false)
+            @helper.inputRadioGroup(applicationForm("sex"), Seq("Male" -> "Male", "Female" -> "Female"), '_label -> "Sex", '_showConstraints -> false)
+            @helper.inputText(applicationForm("age"), '_label -> "Age", '_showConstraints -> false)
+            @helper.select(
+                applicationForm("country"),
+                countries.map(country => country.alpha3Code -> country.name),
+                '_default -> "Choose Country", '_label -> "Country",
+                '_showConstraints -> false)
+        <input type="submit" value="Apply" />
+    }
+    </div>
+</body>
+</html>

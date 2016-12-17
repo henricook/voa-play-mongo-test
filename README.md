@@ -8,9 +8,13 @@ by looking at my current team's open source contributions (@henricook on github.
 
 You can also contact me on hmrcdigital slack, @henri.cook
 
+# To Run
+
+sbt run
+
 # About the test
 
-This was implemented in around one hour. 
+This was implemented in around one hour.
 
 ## Base
 
@@ -24,6 +28,25 @@ backend microservices.
 ## Validation
 
 I've used exclusively server-side validation as it's the most reliable, given time client side could be added so the user gets less jarring validation messages.
+
+## Front-end
+
+Given more time, i would have added a base template for views. I would also have considered not using flashing() to pass the user's firstname for the success screen
+in favour of a GET parameter (most reliable) or pulling the latest inserted record from the database (fine for this example, but a bad idea in general).
+
+## Architecture
+
+For such a straightforward spec, I could legitimately be accused of overengineering this solution. I've tried to use repository, service and connector patterns to 
+demonstrate my knowledge. But if this spec was the entire scope of the project it's likely I would have done much more within the ApplicationController.
+
+## Storage of UserData
+
+I've used primitive types for storage, notably only storing the Country's three letter code as a string. I contemplated storing the country as a more complex object
+but deemed it unnecessary with the current scope of requirements.
+
+## Datetimes
+
+It has been assumed that the server running the application would be in UTC, as is good practice. LocalDateTime has been use of ZonedDateTime.
 
 ## External Dependencies
 
