@@ -67,11 +67,9 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
           Future.successful(BadRequest(views.html.application(formWithErrors, countryList)))
         },
         application => {
-          (for {
-            _ <- userDataRepository.create(models.persisted.UserData.apply(application))
-          } yield {
+          userDataRepository.create(models.persisted.UserData.apply(application)).map { _ =>
             Redirect(routes.ApplicationController.success).flashing("name" -> application.name)
-          }).recoverWith {
+          }.recoverWith {
             case ex: Throwable =>
               Logger.error("Database error when trying to write application", ex)
               Future.successful(Ok("There was a database error"))
