@@ -3,9 +3,9 @@ package repositories
 import java.time.LocalDateTime
 
 import models.persisted.UserData
-import testkit.TestBase
+import testkit.ITTestBase
 
-class UserdataRepositorySpec extends TestBase {
+class UserdataRepositorySpec extends ITTestBase {
 
   lazy val repo: UserdataRepository = app.injector.instanceOf[UserdataRepository]
 

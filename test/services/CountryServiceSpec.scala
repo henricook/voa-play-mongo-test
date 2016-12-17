@@ -5,10 +5,11 @@ import org.mockito.Mockito._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
+import testkit.TestBase
 
 import scala.concurrent.Future
 
-class CountryServiceSpec extends PlaySpec with ScalaFutures with MockitoSugar {
+class CountryServiceSpec extends TestBase {
   "Get european countries" must {
     "Call the country client to get a list of countries" in new TestFixture {
       val mockCountryList = List(

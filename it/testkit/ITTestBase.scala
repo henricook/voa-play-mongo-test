@@ -11,7 +11,7 @@ import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.play.json.collection.JSONCollection
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait TestBase extends PlaySpec with ScalaFutures with OneAppPerSuite with BeforeAndAfterEach {
+trait ITTestBase extends PlaySpec with ScalaFutures with OneAppPerSuite with BeforeAndAfterEach {
   // Default ScalaFutures patience settings
   implicit val defaultPatience =
     PatienceConfig(timeout = Span(5, Seconds), interval = Span(500, Millis))
