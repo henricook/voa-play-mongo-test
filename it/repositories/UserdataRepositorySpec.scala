@@ -3,12 +3,12 @@ package repositories
 import java.time.LocalDateTime
 
 import models.persisted.UserData
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.play.{ OneAppPerTest, PlaySpec }
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
+import testkit.TestBase
 
-class UserdataRepositorySpec extends PlaySpec with ScalaFutures with OneAppPerTest {
+class UserdataRepositorySpec extends TestBase {
+
+  lazy val repo: UserdataRepository = app.injector.instanceOf[UserdataRepository]
+
   "Userdata Repository create" should {
     "successfully create a user, and verify that creation" in new TestFixture {
       repo.create(sampleUserData).futureValue
@@ -29,7 +29,5 @@ class UserdataRepositorySpec extends PlaySpec with ScalaFutures with OneAppPerTe
       "AAA",
       LocalDateTime.now
     )
-
-    protected lazy val repo: UserdataRepository = app.injector.instanceOf[UserdataRepository]
   }
 }

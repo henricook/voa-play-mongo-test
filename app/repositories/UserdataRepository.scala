@@ -20,9 +20,8 @@ class UserdataRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)(impli
       userDataCollection <- userDataCollectionFuture
       insertResponse <- userDataCollection.insert(userData)
     } yield {
-      println("========== Checking!!!")
-      if (!insertResponse.ok) {
-        throw new Exception("Mongo LastError: %s".format(insertResponse))
+      if (!insertResponse.ok || insertResponse.n != 1) {
+        throw new Exception("Non-ok response or != 1 rows affected. Mongo Response: %s".format(insertResponse))
       } else {
         ()
       }

@@ -2,12 +2,13 @@ package services
 
 import connectors.restcountries.{ Client, Country }
 import org.mockito.Mockito._
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 
 import scala.concurrent.Future
 
-class CountryServiceSpec extends PlaySpec with MockitoSugar {
+class CountryServiceSpec extends PlaySpec with ScalaFutures with MockitoSugar {
   "Get european countries" must {
     "Call the country client to get a list of countries" in new TestFixture {
       val mockCountryList = List(
@@ -20,7 +21,7 @@ class CountryServiceSpec extends PlaySpec with MockitoSugar {
        mockCountryList
       ))
 
-      val result: List[Country] = countryService.getEuropeanCountries
+      val result: List[Country] = countryService.getEuropeanCountries.futureValue
 
       verify(mockCountryClient, times(1)).getEuropeanCountries
 
@@ -31,6 +32,6 @@ class CountryServiceSpec extends PlaySpec with MockitoSugar {
   trait TestFixture {
     protected val mockCountryClient: Client = mock[connectors.restcountries.Client]
 
-    protected lazy val countryService: CountryService = new CountryService(mockCountryClient)
+    protected val countryService: CountryService = new CountryService(mockCountryClient)
   }
 }

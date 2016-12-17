@@ -25,12 +25,10 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
                                       countryService: CountryService,
                                       userDataRepository: UserdataRepository)(implicit exec: ExecutionContext) extends Controller with I18nSupport {
 
-  val countryList: List[Country] = countryService.getEuropeanCountries
-
   /**
     * The application form
     */
-  val form = Form(
+  def form(countryList: List[Country]) = Form(
     mapping(
       "name" -> nonEmptyText,
       "sex" -> nonEmptyText.verifying("Please select a valid sex", List("Male", "Female").contains(_)),
@@ -43,7 +41,11 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
     * Present the main page
     * @return
     */
-  def present = Action { Ok(views.html.application(form, countryList)) }
+  def present = Action.async {
+    countryService.getEuropeanCountries.map { countryList =>
+      Ok(views.html.application(form(countryList), countryList))
+    }
+  }
 
   /**
     * Present a success message after application submission
@@ -55,23 +57,28 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
 
   /**
     * Handle application submission
+    *
     * @return
     */
   def applicationPost = Action.async { implicit request =>
-    form.bindFromRequest.fold(
-      formWithErrors => {
-        Future.successful(BadRequest(views.html.application(formWithErrors, countryList)))
-      },
-      application => {
-        userDataRepository.create(models.persisted.UserData.apply(application)).map { _ =>
-          Redirect(routes.ApplicationController.success).flashing("name" -> application.name)
-        }.recoverWith {
-          case ex: Throwable =>
-            Logger.error("Database error when trying to write application", ex)
-            Future.successful(Ok("There was a database error"))
+    countryService.getEuropeanCountries.flatMap { countryList =>
+      form(countryList).bindFromRequest.fold(
+        formWithErrors => {
+          Future.successful(BadRequest(views.html.application(formWithErrors, countryList)))
+        },
+        application => {
+          (for {
+            _ <- userDataRepository.create(models.persisted.UserData.apply(application))
+          } yield {
+            Redirect(routes.ApplicationController.success).flashing("name" -> application.name)
+          }).recoverWith {
+            case ex: Throwable =>
+              Logger.error("Database error when trying to write application", ex)
+              Future.successful(Ok("There was a database error"))
+          }
         }
-      }
-    )
+      )
+    }
   }
 }
 
