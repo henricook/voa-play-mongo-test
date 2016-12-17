@@ -7,7 +7,7 @@ import play.api.libs.ws.WSClient
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class Client @Inject() (ws: WSClient) {
+class Client @Inject()(ws: WSClient) {
 
   val baseUrl = "https://restcountries.eu/rest/v1/region"
   val europeanCountriesUrl = s"$baseUrl/Europe"

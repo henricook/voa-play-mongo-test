@@ -1,5 +1,6 @@
 package controllers
 
+import java.time.LocalDateTime
 import javax.inject._
 
 import connectors.restcountries.Country
@@ -24,8 +25,7 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
                                       countryService: CountryService,
                                       userDataRepository: UserdataRepository)(implicit exec: ExecutionContext) extends Controller with I18nSupport {
 
-  // TODO: Await is normally a bad pattern, can this be done differently?
-  val countryList: List[Country] = Await.result(countryService.getEuropeanCountries, 5 seconds)
+  val countryList: List[Country] = countryService.getEuropeanCountries
 
   /**
     * The application form
@@ -63,7 +63,7 @@ class ApplicationController @Inject()(val messagesApi: MessagesApi,
         Future.successful(BadRequest(views.html.application(formWithErrors, countryList)))
       },
       application => {
-        userDataRepository.create(application).map { _ =>
+        userDataRepository.create(models.persisted.UserData.apply(application)).map { _ =>
           Redirect(routes.ApplicationController.success).flashing("name" -> application.name)
         }.recoverWith {
           case ex: Throwable =>

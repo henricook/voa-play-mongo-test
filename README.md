@@ -73,7 +73,7 @@ I have used Reactive Mongo, a reactive, asynchronous and non-blocking Scala driv
 
 ## Testing
 
-Connectors are untested, they could be as a future enhancement with something like wiremock.
+Connectors are untested, they could be as a future enhancement with something like wiremock or by mocking WSClient.
 
 Repositories and controllers are integration tested
 
