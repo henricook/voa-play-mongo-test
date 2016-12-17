@@ -38,6 +38,10 @@ bring the data in locally.
 
 Is parsed using play-json and case classes from the server-side. Again this could be done client side with an AJAX call, as a potential future improvement.
 
+## Mongo
+
+I have used Reactive Mongo, a reactive, asynchronous and non-blocking Scala driver for MongoDB.
+
 # Requirements
 
 Please complete the following problem to determine your competency with Scala
