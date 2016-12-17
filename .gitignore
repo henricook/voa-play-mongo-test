@@ -16,4 +16,10 @@ project/plugins/project/
 .scala_dependencies
 .worksheet
 
-.idea
+/.idea
+logs
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID

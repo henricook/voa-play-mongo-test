@@ -10,7 +10,7 @@ You can also contact me on hmrcdigital slack, @henri.cook
 
 # About the test
 
-This was implemented in around one hour.
+This was implemented in around one hour. 
 
 ## Base
 
